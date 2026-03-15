@@ -31,7 +31,10 @@ def load_rag_chain():
             documents=splits, embedding=embeddings, persist_directory=DB_PATH
         )
 
-    api_key = st.secrets.get("ANTHROPIC_API_KEY") or os.environ.get("ANTHROPIC_API_KEY")
+    try:
+        api_key = st.secrets["ANTHROPIC_API_KEY"]
+    except Exception:
+        api_key = os.environ.get("ANTHROPIC_API_KEY")
     llm = ChatAnthropic(model="claude-haiku-4-5-20251001", temperature=0, api_key=api_key)
 
     system_prompt = (
@@ -95,7 +98,3 @@ if question := st.chat_input("Ask a question about the Bible..."):
                     st.markdown(f"> {doc.page_content}")
 
     st.session_state.messages.append({"role": "assistant", "content": answer})
-
-# ── Footer ────────────────────────────────────────────────────────────────────
-st.divider()
-st.markdown("<div style='text-align: center; color: grey;'>Built by Blaise and Claude.</div>", unsafe_allow_html=True)
