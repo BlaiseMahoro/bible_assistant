@@ -1,6 +1,7 @@
 import os
 import streamlit as st
-from langchain_ollama import ChatOllama, OllamaEmbeddings
+from langchain_anthropic import ChatAnthropic
+from langchain_huggingface import HuggingFaceEmbeddings
 from langchain_chroma import Chroma
 from langchain_community.document_loaders import TextLoader
 from langchain_text_splitters import RecursiveCharacterTextSplitter
@@ -14,10 +15,10 @@ st.title("Bible Assistant")
 st.caption("Ask any question and get scripture-backed answers.")
 
 # ── Load / build the RAG chain (cached so it only runs once per session) ─────
-@st.cache_resource(show_spinner="Loading Bible database...")
+@st.cache_resource(show_spinner="Setting up Bible database — this takes ~2 min on first launch...")
 def load_rag_chain():
     DB_PATH = "./bible_db"
-    embeddings = OllamaEmbeddings(model="nomic-embed-text")
+    embeddings = HuggingFaceEmbeddings(model_name="sentence-transformers/all-MiniLM-L6-v2")
 
     if os.path.exists(DB_PATH) and os.listdir(DB_PATH):
         vectorstore = Chroma(persist_directory=DB_PATH, embedding_function=embeddings)
@@ -30,7 +31,8 @@ def load_rag_chain():
             documents=splits, embedding=embeddings, persist_directory=DB_PATH
         )
 
-    llm = ChatOllama(model="llama3", temperature=0)
+    api_key = st.secrets.get("ANTHROPIC_API_KEY") or os.environ.get("ANTHROPIC_API_KEY")
+    llm = ChatAnthropic(model="claude-haiku-4-5-20251001", temperature=0, api_key=api_key)
 
     system_prompt = (
         "You are a Bible verse lookup tool. "
@@ -96,4 +98,4 @@ if question := st.chat_input("Ask a question about the Bible..."):
 
 # ── Footer ────────────────────────────────────────────────────────────────────
 st.divider()
-st.markdown("<div style='text-align: center; color: grey;'>Built by BM</div>", unsafe_allow_html=True)
+st.markdown("<div style='text-align: center; color: grey;'>Built by Blaise and Claude.</div>", unsafe_allow_html=True)

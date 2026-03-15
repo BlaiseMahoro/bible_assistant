@@ -1,6 +1,5 @@
-# Generated files — rebuilt by setup.py
+# Vector DB — rebuilt at startup automatically
 bible_db/
-bible_kjv_clean.txt
 
 # Raw Bible source — download from gutenberg.org
 bible_text_kjv.txt
