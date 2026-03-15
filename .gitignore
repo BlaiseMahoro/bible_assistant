@@ -1,0 +1,19 @@
+# Generated files — rebuilt by setup.py
+bible_db/
+bible_kjv_clean.txt
+
+# Raw Bible source — download from gutenberg.org
+bible_text_kjv.txt
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.env
+
+# macOS
+.DS_Store
+
+# Streamlit
+.streamlit/
